@@ -8,6 +8,12 @@ app.use(morgan('combined'))
 app.use(bodyParser.json())
 app.use(cors())
 
+app.get('/status', (req, res) => {
+  res.send({
+    message: 'Hello World'
+  })
+})
+
 app.listen(process.env.PORT || 8081)
 
 console.log('Hello')
