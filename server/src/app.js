@@ -8,9 +8,11 @@ app.use(morgan('combined'))
 app.use(bodyParser.json())
 app.use(cors())
 
-app.get('/status', (req, res) => {
+app.post('/register', (req, res) => {
+  const email = req.body.email
+  const pass = req.body.password
   res.send({
-    message: 'Hello World'
+    message: `Hello ${email}, this is your password: ${pass}`
   })
 })
 
