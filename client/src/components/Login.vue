@@ -3,13 +3,10 @@
     <v-flex xs6 offset-xs3>
       <div class="white elevation-2">
         <v-toolbar flat dense class="cyan" dark>
-          <v-toolbar-title>Register</v-toolbar-title>
+          <v-toolbar-title>Log In</v-toolbar-title>
         </v-toolbar>
         <div class="pl-4 pr-4 pt-2 pb-2">
-          <form
-            name="tab-tracker-form"
-            autocomplete="off"
-          >
+          <form name="tab-tracker-form">
             <v-text-field
               v-model="email"
               label="Email"
@@ -19,18 +16,16 @@
               type="password"
               v-model="password"
               label="Password"
-              autocomplete="new-password"
             />
             <br>
             <div class="error" v-html="error"/>
             <br>
             <v-btn
               dark
-              type="submit"
               class="cyan"
-              @click="register"
+              @click="login"
             >
-              Register
+              Log In
             </v-btn>
           </form>
         </div>
@@ -42,7 +37,7 @@
 <script>
 import auth from '@/services/authentication'
 export default {
-  name: 'register',
+  name: 'login',
   data () {
     return {
       email: '',
@@ -51,10 +46,10 @@ export default {
     }
   },
   methods: {
-    async register () {
+    async login () {
       this.error = null
       try {
-        const reponse = await auth.register({
+        const reponse = await auth.login({
           email: this.email.toLowerCase(),
           password: this.password
         })

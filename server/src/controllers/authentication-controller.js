@@ -1,14 +1,60 @@
 const {User} = require('../models')
+const jwt = require('jsonwebtoken')
+const config = require('../config/config')
+
+function jwtSignUser (user) {
+  const ONE_WEEK = 60 * 60 * 24 * 7
+  return jwt.sign(user, config.authentication.jwtSecret, { expiresIn: ONE_WEEK })
+}
 
 module.exports = {
   async register (req, res) {
-    console.log(`--- LOG INFO: Registering user email: ${req.body.email}, password: ${req.body.pass}`)
+    const {email, password} = req.body
+    console.log(`--- LOG INFO: Registering user email: ${email}, password: ${password}`)
     try {
       const user = await User.create(req.body)
-      res.send(user.toJSON())
+      const userJson = user.toJSON()
+      res.send({
+        token: jwtSignUser(userJson),
+        user: userJson
+      })
     } catch (err) {
       res.status(400).send({
         error: 'This email account is already in use.'
+      })
+    }
+  },
+  async login (req, res) {
+    console.log(`--- LOG INFO: Logging user in: ${req.body.email}, password: ${req.body.pass}`)
+    try {
+      const {email, password} = req.body
+      const user = await User.findOne({
+        where: {email}
+      })
+
+      // validate if user exists
+      if (!user) {
+        return res.status(403).send({
+          error: 'The login information was incorrect.'
+        })
+      }
+
+      // validate password matches
+      const isPasswordValid = await user.comparePassword(password)
+      if (!isPasswordValid) {
+        return res.status(403).send({
+          error: 'The login information was incorrect.'
+        })
+      }
+
+      const userJson = user.toJSON()
+      res.send({
+        token: jwtSignUser(userJson),
+        user: userJson
+      })
+    } catch (err) {
+      res.status(500).send({
+        error: 'An error has occured trying to login.'
       })
     }
   }
